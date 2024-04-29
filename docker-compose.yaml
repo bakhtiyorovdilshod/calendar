@@ -1,0 +1,22 @@
+version: "3"
+
+services:
+  postgres:
+    image: postgres:12
+    ports:
+      - 5434:5432
+    env_file:
+      - .env
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    healthcheck:
+      test: ["CMD", "psql", "-U", "postgres", "-c", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: ["postgres", "-c", "log_statement=all", "-c", "wal_level=logical"]
+
+volumes:
+  postgres_data: {}
+  redis_data: {}
