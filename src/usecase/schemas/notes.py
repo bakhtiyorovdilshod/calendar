@@ -29,7 +29,32 @@ class NoteSchemaAdd(BaseModel):
     Location: str
     Description: str
     ColorCode: str
-    Users: List[int]
+    UserIds: List[int]
+
+class NoteSchemaList(BaseModel):
+    Id: int
+    Title: str
+    FromTime: time
+    TillTime: time
+    ColorCode: str
+
+class NoteUserSchemaList(BaseModel):
+    Id: int
+    UserId: int
+    Fullname: str
+    IsOwner: bool
+
+
+class NoteSchemaDetail(BaseModel):
+    Id: int
+    Title: str
+    Date: date
+    FromTime: time
+    TillTime: time
+    Location: str
+    Description: str
+    ColorCode: str
+    CreatedAt: datetime
 
 class NoteSchemaAddResponse(BaseModel):
     Id: int
@@ -46,10 +71,11 @@ class NoteSchemaAddResponse(BaseModel):
 
 
 class NoteSchemaEdit(BaseModel):
-    title: Optional[str]
-    from_time: Optional[date]
-    till_time: Optional[date]
-    location: Optional[str]
-    description: Optional[str]
-    color_code: Optional[str]
-    users: Optional[List[int]]
+    Title: str
+    Date: date
+    FromTime: time
+    TillTime: time
+    Location: str
+    Description: str
+    ColorCode: str
+    UserIds: List[int]

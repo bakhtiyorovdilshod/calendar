@@ -1,4 +1,7 @@
-from fastapi import APIRouter
+from datetime import datetime, timedelta
+from fastapi import APIRouter, HTTPException, Query
+
+from src.usecase.utils.user import User, get_current_user
 from .dependencies import *
 from src.usecase.schemas.notes import NoteSchema, NoteSchemaAdd, NoteSchemaAddResponse, NoteSchemaEdit
 from src.usecase.services.notes import NotesService
@@ -12,28 +15,51 @@ router = APIRouter(
 @router.post("")
 async def add_note(
     note: NoteSchemaAdd,
-    uow: UOWDep
+    uow: UOWDep,
+    user: User = Depends(get_current_user)
 ):
-    note = await NotesService().add_note(uow, note)
-    # print(note.get('created_at'))
-    # response = NoteSchemaAddResponse(
-    #     Id=note.get('id'),
-    #     OrganizationId=note.get('organization_id'),
-    #     Description=note.get('description'),
-    #     Title=note.get('title'),
-    #     Date=note.get('date'),
-    #     FromTime=note.get('from_time'),
-    #     TillTime=note.get('till_time'),
-    #     Location=note.get('location'),
-    #     ColorCode=note.get('color_code'),
-    #     CreatedAt=note.get('created_at')
-    # )
+    note = await NotesService().add_note(uow, note, user.last_organization_id)
     return note
 
 
 @router.get("")
 async def get_notes(
     uow: UOWDep,
+    user: User = Depends(get_current_user),
+    begin_date: datetime = Query(..., description="Start date for filtering notes", format="date-time"),
+    end_date: datetime = Query(..., description="End date for filtering notes", format="date-time"),
 ):
-    users = await NotesService().get_notes(uow)
-    return users
+    """
+    Retrieve notes filtered by date range.
+    """
+    notes = await NotesService().get_notes(uow, begin_date, end_date)
+    return notes
+
+@router.get("/{note_id}")
+async def get_single_note(
+    note_id: int,
+    uow: UOWDep,
+    user: User = Depends(get_current_user)
+):
+    """
+    Retrieve a single note by its ID.
+    """
+    note = await NotesService().get_note(uow, note_id)
+    if note is None:
+        raise HTTPException(status_code=404, detail="Note not found")
+    return note
+
+@router.put("/{note_id}")
+async def edit_note(
+    note_id: int,
+    note: NoteSchemaEdit,
+    uow: UOWDep,
+    user: User = Depends(get_current_user)
+):
+    """
+    Retrieve a single note by its ID.
+    """
+    note = await NotesService().edit_note(uow, note_id, note)
+    if note is None:
+        raise HTTPException(status_code=404, detail="dddds not found")
+    return note
