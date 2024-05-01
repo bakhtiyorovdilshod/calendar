@@ -1,10 +1,10 @@
 version: "3"
 
 services:
-  calendar:
-    build: .
-    ports:
-      - "9090:9090"
+  # calendar:
+  #   build: .
+  #   ports:
+  #     - "9090:9090"
   postgres:
     image: postgres:12
     ports:

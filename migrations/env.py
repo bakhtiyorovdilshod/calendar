@@ -5,11 +5,11 @@ import os
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
-from src.app.config import Settings
+from src.app.config import settings
 
 from alembic import context
 
-settings = Settings()
+
 DATABASE_URL = f"postgresql+asyncpg://{settings.POSTGRES_USER}:{settings.POSTGRES_PASSWORD}@{settings.POSTGRES_HOST}:{settings.POSTGRES_PORT}/{settings.POSTGRES_DB}"
 
 # this is the Alembic Config object, which provides
