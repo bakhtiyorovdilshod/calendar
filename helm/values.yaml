@@ -1,4 +1,4 @@
-# Default values for calendar.
+# Default values for wms.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -8,18 +8,17 @@ image:
   repository: harbor.mf.uz/hr/calendar
   pullPolicy: Always #IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest-stage"
+  tag: "latest-master"
 
 imagePullSecrets:
   - name: harbor
+
 nameOverride: "calendar"
 fullnameOverride: "calendar"
 
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
-  # Automatically mount a ServiceAccount's API credentials?
-  automount: true
   # Annotations to add to the service account
   annotations: {}
   # The name of the service account to use.
@@ -27,24 +26,29 @@ serviceAccount:
   name: ""
 
 podAnnotations: {}
-podLabels: {}
 
-podSecurityContext:
-  {}
-  # fsGroup: 2000
+podSecurityContext: {}
 
-securityContext:
-  {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
+securityContext: {}
 
 env:
   - name: AUTH_USE_TLS
-    value: false
+    value: "false"
+
+  - name: AUTH_HOST
+    value: "auth"
+
+  - name: AUTH_PORT
+    value: "8080"
+
+  - name: POSTGRES_HOST
+    value: "hr-postgresql.db"
+
+  - name: POSTGRES_PORT
+    value: "5432"
+
+  - name: POSTGRES_DB
+    value: "calendar"
 
   # --- Secrets ---
   - name: POSTGRES_USER
@@ -59,18 +63,6 @@ env:
         name: hr-backend-secrets
         key: calendar__postgres_pass
 
-  - name: POSTGRES_HOST
-    value: hr-postgresql.db
-
-  - name: POSTGRES_PORT
-    value: 5432
-
-  - name: POSTGRES_DB
-    valueFrom:
-      configMapKeyRef:
-        name: hr-backend-configs
-        key: calendar__postgres_db
-
   - name: AUTH_INTERNAL_USERNAME
     valueFrom:
       secretKeyRef:
@@ -83,56 +75,45 @@ env:
         name: hr-backend-secrets
         key: calendar__auth_internal_pass
 
-  - name: AUTH_HOST
-    value: auth
-
-  - name: AUTH_PORT
-    value: 8080
-
 service:
   type: ClusterIP
   port: 9090
   targetPort: 9090
 
+# livenessProbe:
+#   enabled: true
+#   check:
+#     httpGet:
+#       path: /health
+#       port: 8080
+#     terminationGracePeriodSeconds: 30
+
+# readinessProbe:
+#   enabled: true
+#   check:
+#     httpGet:
+#       path: /health
+#       port: 8080
+
 ingress:
   enabled: false
   className: ""
   annotations:
-    {}
-    # kubernetes.io/ingress.class: nginx
+    kubernetes.io/ingress.class: nginx
+    # cert-manager.io/issuer: "letsencrypt-staging"
+    # certmanager.io/acme-challenge-type: http01
     # kubernetes.io/tls-acme: "true"
   hosts:
     - host: cportal-v2.mf.uz
       paths:
         - path: /
           pathType: Prefix
-
   tls: []
-  #  - secretName: chart-example-tls
+  #  - secretName: wms-mf-tls
   #    hosts:
-  #      - chart-example.local
+  #      - wms.mf.uz
 
-resources:
-  {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
-
-livenessProbe:
-  httpGet:
-    path: /
-    port: http
-readinessProbe:
-  httpGet:
-    path: /
-    port: http
+resources: {}
 
 autoscaling:
   enabled: false
@@ -140,19 +121,6 @@ autoscaling:
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
-
-# Additional volumes on the output Deployment definition.
-volumes: []
-# - name: foo
-#   secret:
-#     secretName: mysecret
-#     optional: false
-
-# Additional volumeMounts on the output Deployment definition.
-volumeMounts: []
-# - name: foo
-#   mountPath: "/etc/foo"
-#   readOnly: true
 
 nodeSelector: {}
 
