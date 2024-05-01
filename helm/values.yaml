@@ -12,7 +12,6 @@ image:
 
 imagePullSecrets:
   - name: harbor
-
 nameOverride: "calendar"
 fullnameOverride: "calendar"
 
@@ -27,10 +26,20 @@ serviceAccount:
 
 podAnnotations: {}
 
-podSecurityContext: {}
+podSecurityContext:
+  {}
+  # fsGroup: 2000
 
-securityContext: {}
+securityContext:
+  {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
 
+# Will move to secret in next changes
 env:
   - name: AUTH_USE_TLS
     value: "false"
@@ -50,7 +59,6 @@ env:
   - name: POSTGRES_DB
     value: "calendar"
 
-  # --- Secrets ---
   - name: POSTGRES_USER
     valueFrom:
       secretKeyRef:
@@ -75,25 +83,25 @@ env:
         name: hr-backend-secrets
         key: calendar__auth_internal_pass
 
-service:
-  type: ClusterIP
-  port: 9090
-  targetPort: 9090
-
 # livenessProbe:
-#   enabled: true
-#   check:
+#   enabled: false
+#   cheak:
 #     httpGet:
 #       path: /health
 #       port: 8080
 #     terminationGracePeriodSeconds: 30
 
 # readinessProbe:
-#   enabled: true
-#   check:
+#   enabled: false
+#   cheak:
 #     httpGet:
 #       path: /health
 #       port: 8080
+
+service:
+  type: ClusterIP
+  port: 9090
+  targetPort: 9090
 
 ingress:
   enabled: false
@@ -113,7 +121,18 @@ ingress:
   #    hosts:
   #      - wms.mf.uz
 
-resources: {}
+resources:
+  {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
 
 autoscaling:
   enabled: false
