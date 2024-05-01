@@ -1,4 +1,4 @@
-from src.app.config import Settings
+from src.app.config import settings
 from src.app.middleware import AuthMiddleware
 from src.infrastructure.postgres.database import engine, async_session
 from src.usecase.api.notes import router as router_notes
@@ -20,7 +20,7 @@ async def lifespan(app: FastAPI):
     async with async_session() as session:
         await session.close()
 
-settings = Settings()
+
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(AuthMiddleware)
 
