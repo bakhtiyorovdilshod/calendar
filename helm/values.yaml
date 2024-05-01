@@ -8,7 +8,7 @@ image:
   repository: harbor.mf.uz/hr/calendar
   pullPolicy: Always #IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest-master"
+  tag: "latest-stage"
 
 imagePullSecrets:
   - name: harbor
