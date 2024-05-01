@@ -1,0 +1,17 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  HELM_PATH: helm
+  ARTIFACTS: ""
+  PROJECT_NAMESPACE: hr
+  NAMESPACE: backend
+
+include:
+  - project: "ops/cicd/pipeline-configs"
+    ref: master
+    file: "stages/__dockerBuild.yml"
+  - project: "ops/cicd/pipeline-configs"
+    ref: master
+    file: "stages/__kubeDeploy.yml"
