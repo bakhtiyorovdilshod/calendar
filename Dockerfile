@@ -24,6 +24,8 @@ RUN chmod +x /usr/src/app/entrypoint.sh
 # copy app
 COPY . /app
 
+# Expose the FastAPI port
+EXPOSE 9090
 # run entrypoint.sh
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
-CMD ["python", "main.py"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "9090"]
