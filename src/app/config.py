@@ -2,7 +2,6 @@ from pydantic_settings import BaseSettings
 import os
 
 
-
 class Settings(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
@@ -26,6 +25,9 @@ def load_config_from_env():
         env_var = os.environ.get(field)
         if env_var is not None:
             config[field] = env_var
+
+    print("AAAAAA", os.environ)
+
     return Settings(**config)
 
 
