@@ -1,4 +1,4 @@
-.PHONY: run deps-up deps-down lint exec logs locale-gen locale-compile
+.PHONY: run deps-up deps-down lint exec logs locale-gen locale-compile env
 
 run:
 	docker compose -f docker-compose.yaml up -d --build
@@ -19,4 +19,6 @@ exec:
 
 logs:
 	docker compose -f docker-compose.yaml logs -f $(name)
+env:
+	export $(cat .env | xargs)
 

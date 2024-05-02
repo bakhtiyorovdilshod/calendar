@@ -23,6 +23,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(AuthMiddleware)
+app.openapi_version = "3.0.2"
 
 for router in all_routers:
     app.include_router(router)
