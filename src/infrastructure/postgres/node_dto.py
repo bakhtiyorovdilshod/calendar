@@ -27,39 +27,39 @@ class Note(Base):
 
     __tablename__ = "notes"
 
-    Id = Column(Integer, primary_key=True)
-    OrganizationId = Column(Integer)
-    Title = Column(String)
-    Date = Column(Date)
-    FromTime = Column(Time)
-    TillTime = Column(Time)
-    Location = Column(String)
-    Description = Column(Text)
-    ColorCode = Column(String)
-    IsDelete = Column(Boolean, default=False)
-    CreatedAt = Column(TIMESTAMP, default=func.now())
-    UpdatedAt = Column(TIMESTAMP, nullable=True)
+    id = Column(Integer, primary_key=True)
+    organizationId = Column(Integer)
+    title = Column(String)
+    date = Column(Date)
+    fromTime = Column(Time)
+    tillTime = Column(Time)
+    location = Column(String)
+    description = Column(Text)
+    colorCode = Column(String)
+    isDelete = Column(Boolean, default=False)
+    createdAt = Column(TIMESTAMP, default=func.now())
+    updatedAt = Column(TIMESTAMP, nullable=True)
 
     def to_read_model_as_list(self) -> NoteSchemaList:
         return NoteSchemaList(
-            Id=self.Id,
-            Title=self.Title,
-            FromTime=self.FromTime.strftime("%H:%M"),
-            TillTime=self.TillTime.strftime("%H:%M"),
-            ColorCode=self.ColorCode,
+            id=self.id,
+            title=self.title,
+            fromTime=self.fromTime.strftime("%H:%M"),
+            tillTime=self.tillTime.strftime("%H:%M"),
+            colorCode=self.colorCode,
         )
 
     def to_read_model_as_detail(self) -> NoteSchemaDetail:
         return NoteSchemaDetail(
-            Id=self.Id,
-            Title=self.Title,
-            Date=self.Date,
-            FromTime=self.FromTime.strftime("%H:%M"),
-            TillTime=self.TillTime.strftime("%H:%M"),
-            Location=self.Location,
-            Description=self.Description,
-            ColorCode=self.ColorCode,
-            CreatedAt=self.CreatedAt.date().strftime("%Y-%m-%d"),
+            id=self.id,
+            title=self.title,
+            date=self.date,
+            fromTime=self.fromTime.strftime("%H:%M"),
+            tillTime=self.tillTime.strftime("%H:%M"),
+            location=self.location,
+            description=self.description,
+            colorCode=self.colorCode,
+            createdAt=self.createdAt.date().strftime("%Y-%m-%d"),
         )
 
 
@@ -68,16 +68,16 @@ class NoteUser(Base):
 
     __tablename__ = "note_users"
 
-    Id = Column(Integer, primary_key=True)
-    UserId = Column(Integer)
-    Fullname = Column(String)
-    NoteId = Column(Integer, ForeignKey("notes.Id"))
-    CreatedAt = Column(TIMESTAMP, default=func.now())
-    UpdatedAt = Column(TIMESTAMP, nullable=True)
-    IsOwner = Column(Boolean, default=False)
-    IsDelete = Column(Boolean, default=False)
+    id = Column(Integer, primary_key=True)
+    userId = Column(Integer)
+    fullName = Column(String)
+    noteId = Column(Integer, ForeignKey("notes.id"))
+    createdAt = Column(TIMESTAMP, default=func.now())
+    updatedAt = Column(TIMESTAMP, nullable=True)
+    isOwner = Column(Boolean, default=False)
+    isDelete = Column(Boolean, default=False)
 
     def to_read_model_as_list(self) -> NoteUserSchemaList:
         return NoteUserSchemaList(
-            Id=self.Id, UserId=self.UserId, Fullname=self.Fullname, IsOwner=self.IsOwner
+            id=self.id, userId=self.userId, fullName=self.fullName, isOwner=self.isOwner
         )

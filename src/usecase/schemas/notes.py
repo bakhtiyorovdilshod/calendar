@@ -8,76 +8,77 @@ class NoteSchema(BaseModel):
     """NoteSchema represents the schema of a Note."""
 
     id: Optional[int]
-    organization_id: Optional[int]
+    organizationId: Optional[int]
     title: Optional[str]
     date: Optional[date]
-    from_time: Optional[time]
-    till_time: Optional[time]
+    fromTime: Optional[time]
+    tillTime: Optional[time]
     location: Optional[str]
     description: Optional[str]
-    color_code: Optional[str]
-    is_delete: Optional[bool]
-    created_at: Optional[datetime]
-    updated_at: Optional[datetime]
+    colorCode: Optional[str]
+    isDelete: Optional[bool]
+    createdAt: Optional[datetime]
+    updatedAt: Optional[datetime]
 
 
 class NoteSchemaAdd(BaseModel):
-    Title: str
-    Date: date
-    FromTime: time
-    TillTime: time
-    Location: str
-    Description: str
-    ColorCode: str
-    UserIds: List[int]
+    title: str
+    date: date
+    fromTime: time
+    tillTime: time
+    location: str
+    description: str
+    colorCode: str
+    userIds: List[int]
 
 
 class NoteSchemaList(BaseModel):
-    Id: int
-    Title: str
-    FromTime: time
-    TillTime: time
-    ColorCode: str
+    id: int
+    title: str
+    fromTime: time
+    tillTime: time
+    colorCode: str
 
 
 class NoteUserSchemaList(BaseModel):
-    Id: int
-    UserId: int
-    Fullname: str
-    IsOwner: bool
+    id: int
+    userId: int
+    fullName: str
+    isOwner: bool
 
 
 class NoteSchemaDetail(BaseModel):
-    Id: int
-    Title: str
-    Date: date
-    FromTime: time
-    TillTime: time
-    Location: str
-    Description: str
-    ColorCode: str
-    CreatedAt: datetime
+    id: int
+    title: str
+    date: date
+    fromTime: time
+    tillTime: time
+    location: str
+    description: str
+    colorCode: str
+    createdAt: datetime
 
 
 class NoteSchemaAddResponse(BaseModel):
-    Id: int
-    # OrganizationId: int
-    # Title: str
-    # Date: date
-    # FromTime: time
-    # TillTime: time
-    # Location: str
-    # Description: str
-    # ColorCode: str
-    # CreatedAt: date
+    id: int
+    # organizationId: int
+    # title: str
+    # date: date
+    # fromTime: time
+    # tillTime: time
+    # location: str
+    # description: str
+    # colorCode: str
+    # createdAt: date
 
 
 class NoteSchemaEdit(BaseModel):
-    Title: str
-    Date: date
-    FromTime: time
-    TillTime: time
-    Location: str
-    Description: str
-    ColorCode: str
-    UserIds: List[int]
+    title: str
+    date: date
+    fromTime: time
+    tillTime: time
+    location: str
+    description: str
+    colorCode: str
+    userIds: List[int]
+

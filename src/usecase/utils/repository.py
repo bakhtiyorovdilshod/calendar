@@ -41,7 +41,7 @@ class SQLAlchemyRepository(AbstractRepository):
         stmt = (
             update(self.model)
             .values(**data)
-            .filter_by(Id=id)
+            .filter_by(id=id)
             .returning(*self.model.__table__.c)
         )
         res = await self.session.execute(stmt)
@@ -62,21 +62,21 @@ class SQLAlchemyRepository(AbstractRepository):
         end_date: datetime = None,
         note_id: int = None,
     ):
-        stmt = select(self.model).where(self.model.IsDelete == False)
+        stmt = select(self.model).where(self.model.isDelete == False)
 
         # Add date range condition only if both start_date and end_date are provided
         if start_date is not None and end_date is not None:
-            stmt = stmt.where(self.model.CreatedAt.between(start_date, end_date))
+            stmt = stmt.where(self.model.createdAt.between(start_date, end_date))
 
         if note_id:
-            stmt = stmt.where(self.model.NoteId == note_id)
+            stmt = stmt.where(self.model.noteId == note_id)
 
         res = await self.session.execute(stmt)
         res = [row[0].to_read_model_as_list() for row in res.all()]
         return res
 
     async def find_one(self, id: int):
-        stmt = select(self.model).where(self.model.Id == id)
+        stmt = select(self.model).where(self.model.id == id)
         res = await self.session.execute(stmt)
         result = res.scalar_one_or_none()
         if result:
@@ -85,6 +85,6 @@ class SQLAlchemyRepository(AbstractRepository):
             return None
 
     async def delete_note_users(self, id: int):
-        stmt = delete(self.model).where(self.model.NoteId == id)
+        stmt = delete(self.model).where(self.model.noteId == id)
         await self.session.execute(stmt)
         await self.session.commit()
