@@ -88,20 +88,20 @@ service:
   port: 9090
   targetPort: 9090
 
-# livenessProbe:
-#   enabled: true
-#   cheak:
-#     httpGet:
-#       path: /health
-#       port: 9090
-#     terminationGracePeriodSeconds: 30
+livenessProbe:
+  enabled: false
+  cheak:
+    httpGet:
+      path: /health
+      port: 9090
+    terminationGracePeriodSeconds: 30
 
-# readinessProbe:
-#   enabled: true
-#   cheak:
-#     httpGet:
-#       path: /health
-#       port: 9090
+readinessProbe:
+  enabled: false
+  cheak:
+    httpGet:
+      path: /health
+      port: 9090
 
 ingress:
   enabled: false
