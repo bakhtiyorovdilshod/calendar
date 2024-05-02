@@ -1,4 +1,3 @@
-from src.app.config import settings
 from src.app.middleware import AuthMiddleware
 from src.infrastructure.postgres.database import engine, async_session
 from src.usecase.api.notes import router as router_notes
@@ -10,6 +9,7 @@ all_routers = [
 
 import uvicorn
 from fastapi import FastAPI
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -31,7 +31,5 @@ for router in all_routers:
 if __name__ == "__main__":
     uvicorn.run(
         "main:app",
-        host=settings.SERVER_HOST,
-        port=int(settings.SERVER_PORT),
         reload=True,
     )
