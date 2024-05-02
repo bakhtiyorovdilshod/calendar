@@ -43,65 +43,56 @@ securityContext:
 env:
   - name: AUTH_USE_TLS
     value: "false"
-
   - name: AUTH_HOST
     value: "auth"
-
   - name: AUTH_PORT
     value: "8080"
-
   - name: POSTGRES_HOST
     value: "hr-postgresql.db"
-
   - name: POSTGRES_PORT
     value: "5432"
-
   - name: POSTGRES_DB
     value: "calendar"
-
   - name: POSTGRES_USER
     valueFrom:
       secretKeyRef:
         name: hr-backend-secrets
         key: calendar__postgres_user
-
   - name: POSTGRES_PASSWORD
     valueFrom:
       secretKeyRef:
         name: hr-backend-secrets
         key: calendar__postgres_pass
-
   - name: AUTH_INTERNAL_USERNAME
     valueFrom:
       secretKeyRef:
         name: hr-backend-secrets
         key: calendar__auth_internal_user
-
   - name: AUTH_INTERNAL_PASSWORD
     valueFrom:
       secretKeyRef:
         name: hr-backend-secrets
         key: calendar__auth_internal_pass
 
-# livenessProbe:
-#   enabled: false
-#   cheak:
-#     httpGet:
-#       path: /health
-#       port: 8080
-#     terminationGracePeriodSeconds: 30
-
-# readinessProbe:
-#   enabled: false
-#   cheak:
-#     httpGet:
-#       path: /health
-#       port: 8080
-
 service:
   type: ClusterIP
   port: 9090
   targetPort: 9090
+
+# livenessProbe:
+#   enabled: true
+#   cheak:
+#     httpGet:
+#       path: /health
+#       port: 9090
+#     terminationGracePeriodSeconds: 30
+
+# readinessProbe:
+#   enabled: true
+#   cheak:
+#     httpGet:
+#       path: /health
+#       port: 9090
 
 ingress:
   enabled: false
