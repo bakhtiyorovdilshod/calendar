@@ -1,15 +1,32 @@
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, Date, Time, Text, Boolean, TIMESTAMP, ForeignKey, func
-from sqlalchemy.orm import relationship
-from sqlalchemy.orm import mapped_column
+
+from sqlalchemy import (
+    TIMESTAMP,
+    Boolean,
+    Column,
+    Date,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    Time,
+    func,
+)
+from sqlalchemy.orm import mapped_column, relationship
+
 from src.infrastructure.postgres.database import Base
-from src.usecase.schemas.notes import NoteSchemaDetail, NoteSchemaList, NoteUserSchemaList
+from src.usecase.schemas.notes import (
+    NoteSchemaDetail,
+    NoteSchemaList,
+    NoteUserSchemaList,
+)
+
 
 class Note(Base):
     """Note is a SQLAlchemy model representing a note entity."""
 
     __tablename__ = "notes"
-    
+
     Id = Column(Integer, primary_key=True)
     OrganizationId = Column(Integer)
     Title = Column(String)
@@ -31,7 +48,7 @@ class Note(Base):
             TillTime=self.TillTime.strftime("%H:%M"),
             ColorCode=self.ColorCode,
         )
-    
+
     def to_read_model_as_detail(self) -> NoteSchemaDetail:
         return NoteSchemaDetail(
             Id=self.Id,
@@ -45,25 +62,22 @@ class Note(Base):
             CreatedAt=self.CreatedAt.date().strftime("%Y-%m-%d"),
         )
 
+
 class NoteUser(Base):
     """NoteUser is a SQLAlchemy model representing a note-user relationship."""
-    
+
     __tablename__ = "note_users"
 
     Id = Column(Integer, primary_key=True)
     UserId = Column(Integer)
     Fullname = Column(String)
-    NoteId = Column(Integer, ForeignKey('notes.Id'))
+    NoteId = Column(Integer, ForeignKey("notes.Id"))
     CreatedAt = Column(TIMESTAMP, default=func.now())
     UpdatedAt = Column(TIMESTAMP, nullable=True)
     IsOwner = Column(Boolean, default=False)
     IsDelete = Column(Boolean, default=False)
 
-
     def to_read_model_as_list(self) -> NoteUserSchemaList:
         return NoteUserSchemaList(
-            Id=self.Id,
-            UserId=self.UserId,
-            Fullname=self.Fullname,
-            IsOwner=self.IsOwner
+            Id=self.Id, UserId=self.UserId, Fullname=self.Fullname, IsOwner=self.IsOwner
         )

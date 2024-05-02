@@ -1,14 +1,13 @@
 import asyncio
-from logging.config import fileConfig
 import os
+from logging.config import fileConfig
 
+from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
+
 from src.app.config import settings
-
-from alembic import context
-
 
 DATABASE_URL = f"postgresql+asyncpg://{settings.POSTGRES_USER}:{settings.POSTGRES_PASSWORD}@{settings.POSTGRES_HOST}:{settings.POSTGRES_PORT}/{settings.POSTGRES_DB}"
 
@@ -28,6 +27,7 @@ if config.config_file_name is not None:
 # target_metadata = mymodel.Base.metadata
 from src.infrastructure.postgres.database import Base
 from src.infrastructure.postgres.node_dto import Note, NoteUser
+
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,

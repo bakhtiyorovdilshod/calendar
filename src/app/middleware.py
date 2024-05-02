@@ -1,11 +1,11 @@
 import json
+
+import httpx
 from fastapi import HTTPException, Request
 from starlette.middleware.base import BaseHTTPMiddleware
+
 from src.app.config import settings
-import httpx
-
 from src.usecase.utils.user import User
-
 
 VERIFY_USER_PATH = "api/v1/auth/internal/verify"
 VERIFY_USER_SCHEME = "https" if settings.AUTH_USE_TLS else "http"
@@ -52,5 +52,3 @@ class AuthMiddleware(BaseHTTPMiddleware):
             )
             request.state.user = user
             return await call_next(request)
-
-

@@ -9,7 +9,7 @@ from src.usecase.repositories.note import *
 class IUnitOfWork(ABC):
     notes: Type[NotesRepository]
     note_users: Type[NoteUsersRepository]
-    
+
     @abstractmethod
     def __init__(self):
         ...
@@ -37,6 +37,7 @@ class UnitOfWork:
 
     async def __aenter__(self):
         from src.usecase.repositories.note import NotesRepository, NoteUsersRepository
+
         self.session = self.session_factory()
 
         self.notes = NotesRepository(self.session)

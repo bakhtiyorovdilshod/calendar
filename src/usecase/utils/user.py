@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
+
 from fastapi import Depends, HTTPException, Request
 
 
@@ -14,6 +15,7 @@ class Roles(Enum):
     COMMISSION_MEMBER = "COMMISSION_MEMBER"
     COMMISSION_HEAD = "COMMISSION_HEAD"
     EXECUTIVE_OFFICER = "EXECUTIVE_OFFICER"
+
 
 @dataclass
 class User:

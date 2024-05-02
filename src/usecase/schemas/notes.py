@@ -1,6 +1,7 @@
+from datetime import date, datetime, time
+from typing import List, Optional
+
 from pydantic import BaseModel
-from datetime import date, time, datetime
-from typing import Optional, List
 
 
 class NoteSchema(BaseModel):
@@ -20,7 +21,6 @@ class NoteSchema(BaseModel):
     updated_at: Optional[datetime]
 
 
-
 class NoteSchemaAdd(BaseModel):
     Title: str
     Date: date
@@ -31,12 +31,14 @@ class NoteSchemaAdd(BaseModel):
     ColorCode: str
     UserIds: List[int]
 
+
 class NoteSchemaList(BaseModel):
     Id: int
     Title: str
     FromTime: time
     TillTime: time
     ColorCode: str
+
 
 class NoteUserSchemaList(BaseModel):
     Id: int
@@ -56,6 +58,7 @@ class NoteSchemaDetail(BaseModel):
     ColorCode: str
     CreatedAt: datetime
 
+
 class NoteSchemaAddResponse(BaseModel):
     Id: int
     # OrganizationId: int
@@ -67,7 +70,6 @@ class NoteSchemaAddResponse(BaseModel):
     # Description: str
     # ColorCode: str
     # CreatedAt: date
-
 
 
 class NoteSchemaEdit(BaseModel):

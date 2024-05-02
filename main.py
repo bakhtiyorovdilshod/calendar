@@ -1,8 +1,10 @@
-from src.app.middleware import AuthMiddleware
-from fastapi.middleware.cors import CORSMiddleware
-from src.infrastructure.postgres.database import engine, async_session
-from src.usecase.api.notes import router as router_notes
 from contextlib import asynccontextmanager
+
+from fastapi.middleware.cors import CORSMiddleware
+
+from src.app.middleware import AuthMiddleware
+from src.infrastructure.postgres.database import async_session, engine
+from src.usecase.api.notes import router as router_notes
 
 all_routers = [
     router_notes,
@@ -22,7 +24,11 @@ async def lifespan(app: FastAPI):
         await session.close()
 
 
-app = FastAPI(lifespan=lifespan, docs_url="/api/v1/calendar/swagger/", openapi_url="/api/v1/calendar/openapi.json")
+app = FastAPI(
+    lifespan=lifespan,
+    docs_url="/swagger/",    
+    openapi_url="/openapi.json",
+)
 
 # Initialize the CORSMiddleware with the appropriate arguments
 app.add_middleware(
