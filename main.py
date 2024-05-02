@@ -26,8 +26,9 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     lifespan=lifespan,
-    docs_url="/swagger/",    
+    docs_url="/swagger/",
     openapi_url="/openapi.json",
+    redoc_url=None
 )
 
 # Initialize the CORSMiddleware with the appropriate arguments
@@ -43,7 +44,7 @@ app.add_middleware(
 app.add_middleware(AuthMiddleware)
 
 for router in all_routers:
-    app.include_router(router, prefix="/api/v1/calendar")
+    app.include_router(router)
 
 
 if __name__ == "__main__":
