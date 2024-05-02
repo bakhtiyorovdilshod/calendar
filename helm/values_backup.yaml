@@ -42,7 +42,7 @@ securityContext:
 # Will move to secret in next changes
 env:
   - name: AUTH_USE_TLS
-    value: "false"
+    value: false
 
   - name: AUTH_HOST
     value: auth
@@ -93,7 +93,7 @@ livenessProbe:
   cheak:
     httpGet:
       path: /health
-      port: 8080
+      port: 9090
     terminationGracePeriodSeconds: 30
 
 readinessProbe:
@@ -101,7 +101,7 @@ readinessProbe:
   cheak:
     httpGet:
       path: /health
-      port: 8080
+      port: 9090
 
 ingress:
   enabled: false
