@@ -21,12 +21,11 @@ async def lifespan(app: FastAPI):
         await session.close()
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan, docs_url="/api/v1/calendar/swagger", openapi_url="/api/v1/calendar/openapi.json")
 app.add_middleware(AuthMiddleware)
-app.openapi_version = "3.1.0"
 
 for router in all_routers:
-    app.include_router(router)
+    app.include_router(router, prefix="/api/v1/calendar")
 
 
 if __name__ == "__main__":
