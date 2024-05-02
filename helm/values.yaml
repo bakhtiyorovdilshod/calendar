@@ -42,32 +42,41 @@ securityContext:
 # Will move to secret in next changes
 env:
   - name: AUTH_USE_TLS
-    value: "false"
+    value: false
+
   - name: AUTH_HOST
-    value: "auth"
+    value: auth
+
   - name: AUTH_PORT
     value: "8080"
+
   - name: POSTGRES_HOST
-    value: "hr-postgresql.db"
+    value: hr-postgresql.db
+
   - name: POSTGRES_PORT
     value: "5432"
+
   - name: POSTGRES_DB
-    value: "calendar"
+    value: calendar
+
   - name: POSTGRES_USER
     valueFrom:
       secretKeyRef:
         name: hr-backend-secrets
         key: calendar__postgres_user
+
   - name: POSTGRES_PASSWORD
     valueFrom:
       secretKeyRef:
         name: hr-backend-secrets
         key: calendar__postgres_pass
+
   - name: AUTH_INTERNAL_USERNAME
     valueFrom:
       secretKeyRef:
         name: hr-backend-secrets
         key: calendar__auth_internal_user
+
   - name: AUTH_INTERNAL_PASSWORD
     valueFrom:
       secretKeyRef:
