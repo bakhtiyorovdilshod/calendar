@@ -11,8 +11,8 @@ class NotesService:
     ):
         notes_dict = note.model_dump()
         user_ids = notes_dict.pop("userIds")
-        notes_dict.update({"organizationId": organization_id})
-        notes_dict.update({"ownerId": owner_id})
+        notes_dict.update({"organizationId": organization_id, "ownerId": owner_id})
+        print(notes_dict)
         note_users = []
         async with uow:
             note = await uow.notes.add_one(notes_dict)

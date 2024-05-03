@@ -37,7 +37,7 @@ class Note(Base):
     description = Column(Text)
     colorCode = Column(String)
     isDelete = Column(Boolean, default=False)
-    ownerID = Column(Integer)
+    ownerId = Column(Integer)
     createdAt = Column(TIMESTAMP, default=func.now())
     updatedAt = Column(TIMESTAMP, nullable=True)
 
