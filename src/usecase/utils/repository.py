@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 
-from sqlalchemy import delete, func, insert, select, update
+from sqlalchemy import DATE, delete, func, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.usecase.schemas.notes import NoteSchemaAddResponse
@@ -70,13 +70,14 @@ class SQLAlchemyRepository(AbstractRepository):
 
         # Add date range condition only if both start_date and end_date are provided
         if begin_date is not None and end_date is not None:
-            stmt = stmt.where(self.model.createdAt.between(begin_date, end_date))
+            stmt = stmt.where(func.cast(self.model.createdAt, DATE) >= begin_date.date())
+            stmt = stmt.where(func.cast(self.model.createdAt, DATE) <= end_date.date())
 
         if note_id:
             stmt = stmt.where(self.model.noteId == note_id)
 
         res = await self.session.execute(stmt)
-        res = [row[0].to_read_model_as_list(self.session) for row in res.all()]
+        res = [row[0].to_read_model_as_list() for row in res.all()]
         return res
 
     async def find_one(self, id: int):

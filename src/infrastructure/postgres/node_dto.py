@@ -42,12 +42,12 @@ class Note(Base):
     createdAt = Column(TIMESTAMP, default=func.now())
     updatedAt = Column(TIMESTAMP, nullable=True)
 
-    def to_read_model_as_list(self, session) -> dict:
+    def to_read_model_as_list(self) -> dict:
         return {
             "id": self.id,
             "title": self.title,
-            "fromTime": self.fromTime.strftime("%H:%M:%S"),
-            "tillTime": self.tillTime.strftime("%H:%M:%S"),
+            "fromTime": self.fromTime.strftime("%H:%M"),
+            "tillTime": self.tillTime.strftime("%H:%M"),
             "date": self.date,
             "colorCode": self.colorCode
         }
