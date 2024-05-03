@@ -41,7 +41,7 @@ async def get_notes(
     """
     Retrieve notes filtered by date range.
     """
-    notes = await NotesService().get_notes(uow, begin_date, end_date)
+    notes = await NotesService().get_notes(uow=uow, organization_id=user.last_organization_id, begin_date=begin_date, end_date=end_date)
     return notes
 
 

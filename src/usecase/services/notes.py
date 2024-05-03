@@ -12,7 +12,6 @@ class NotesService:
         notes_dict = note.model_dump()
         user_ids = notes_dict.pop("userIds")
         notes_dict.update({"organizationId": organization_id, "ownerId": owner_id})
-        print(notes_dict)
         note_users = []
         async with uow:
             note = await uow.notes.add_one(notes_dict)
@@ -23,16 +22,18 @@ class NotesService:
                     "noteId": note.get("id"),
                 }
                 note_user = await uow.note_users.add_one(note_user_dict)
+                note_user.pop('isDelete')
+                note_user.pop('updatedAt')
                 note_users.append(note_user)
             await uow.commit()
             note.update({"users": note_users})
             return note
 
     async def get_notes(
-        self, uow: IUnitOfWork, start_date: datetime = None, end_date: datetime = None
+        self, organization_id: int, uow: IUnitOfWork, begin_date: datetime, end_date: datetime
     ):
         async with uow:
-            notes = await uow.notes.find_all(start_date=start_date, end_date=end_date)
+            notes = await uow.notes.find_all(begin_date=begin_date, end_date=end_date, organization_id=organization_id)
             return notes
 
     async def edit_note(self, uow: IUnitOfWork, note_id: int, note: NoteSchemaEdit):
