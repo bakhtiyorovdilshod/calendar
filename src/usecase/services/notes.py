@@ -7,11 +7,12 @@ from src.usecase.utils.unitofwork import IUnitOfWork
 
 class NotesService:
     async def add_note(
-        self, uow: IUnitOfWork, note: NoteSchemaAdd, organization_id: int
+        self, uow: IUnitOfWork, note: NoteSchemaAdd, organization_id: int, owner_id: int
     ):
         notes_dict = note.model_dump()
         user_ids = notes_dict.pop("userIds")
         notes_dict.update({"organizationId": organization_id})
+        notes_dict.update({"ownerId": owner_id})
         note_users = []
         async with uow:
             note = await uow.notes.add_one(notes_dict)

@@ -14,20 +14,20 @@ from src.usecase.utils.user import User, get_current_user
 from .dependencies import *
 
 router = APIRouter(
-    prefix="/notes/",
+    prefix="/notes",
     tags=["Notes"],
 )
 
 
-@router.post("")
+@router.post("/")
 async def add_note(
     note: NoteSchemaAdd, uow: UOWDep, user: User = Depends(get_current_user)
 ):
-    note = await NotesService().add_note(uow, note, user.last_organization_id)
+    note = await NotesService().add_note(uow, note, user.last_organization_id, user.id)
     return note
 
 
-@router.get("")
+@router.get("/")
 async def get_notes(
     uow: UOWDep,
     user: User = Depends(get_current_user),
