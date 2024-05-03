@@ -58,14 +58,15 @@ class SQLAlchemyRepository(AbstractRepository):
 
     async def find_all(
         self,
-        organization_id: int,
+        organization_id: int = None,
         begin_date: datetime = None,
         end_date: datetime = None,
         note_id: int = None,
         
     ):
         stmt = select(self.model).where(self.model.isDelete == False)
-        stmt = stmt.where(self.model.organizationId == organization_id)
+        if organization_id:
+            stmt = stmt.where(self.model.organizationId == organization_id)
 
         # Add date range condition only if both start_date and end_date are provided
         if begin_date is not None and end_date is not None:
