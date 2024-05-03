@@ -34,6 +34,9 @@ class NotesService:
     ):
         async with uow:
             notes = await uow.notes.find_all(begin_date=begin_date, end_date=end_date, organization_id=organization_id)
+            for note in notes:
+                users_count = await uow.note_users.count_note_users(note_id=note.get('id'))
+                note['usersCount'] = users_count
             return notes
 
     async def edit_note(self, uow: IUnitOfWork, note_id: int, note: NoteSchemaEdit):
@@ -73,3 +76,7 @@ class NoteUserService:
         async with uow:
             note_users = await uow.note_users.find_all(note_id=note_id)
             return note_users
+        
+
+   
+ 

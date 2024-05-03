@@ -11,6 +11,7 @@ from sqlalchemy import (
     Text,
     Time,
     func,
+    select,
 )
 from sqlalchemy.orm import mapped_column, relationship
 
@@ -41,14 +42,15 @@ class Note(Base):
     createdAt = Column(TIMESTAMP, default=func.now())
     updatedAt = Column(TIMESTAMP, nullable=True)
 
-    def to_read_model_as_list(self) -> NoteSchemaList:
-        return NoteSchemaList(
-            id=self.id,
-            title=self.title,
-            fromTime=self.fromTime.strftime("%H:%M"),
-            tillTime=self.tillTime.strftime("%H:%M"),
-            colorCode=self.colorCode,
-        )
+    def to_read_model_as_list(self, session) -> dict:
+        return {
+            "id": self.id,
+            "title": self.title,
+            "fromTime": self.fromTime.strftime("%H:%M:%S"),
+            "tillTime": self.tillTime.strftime("%H:%M:%S"),
+            "date": self.date,
+            "colorCode": self.colorCode
+        }
 
     def to_read_model_as_detail(self) -> NoteSchemaDetail:
         return NoteSchemaDetail(
@@ -62,6 +64,7 @@ class Note(Base):
             colorCode=self.colorCode,
             createdAt=self.createdAt.date().strftime("%Y-%m-%d"),
         )
+    
 
 
 class NoteUser(Base):

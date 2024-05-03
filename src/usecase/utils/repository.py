@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 
-from sqlalchemy import delete, insert, select, update
+from sqlalchemy import delete, func, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.usecase.schemas.notes import NoteSchemaAddResponse
@@ -76,7 +76,7 @@ class SQLAlchemyRepository(AbstractRepository):
             stmt = stmt.where(self.model.noteId == note_id)
 
         res = await self.session.execute(stmt)
-        res = [row[0].to_read_model_as_list() for row in res.all()]
+        res = [row[0].to_read_model_as_list(self.session) for row in res.all()]
         return res
 
     async def find_one(self, id: int):
@@ -92,3 +92,10 @@ class SQLAlchemyRepository(AbstractRepository):
         stmt = delete(self.model).where(self.model.noteId == id)
         await self.session.execute(stmt)
         await self.session.commit()
+    
+    async def count_note_users(self, note_id: int):
+        stmt = select(func.count()).select_from(self.model).where(self.model.noteId == note_id)
+        res = await self.session.execute(stmt)
+        count = res.scalar()
+        return count
+
