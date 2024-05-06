@@ -29,7 +29,7 @@ app = FastAPI(
     docs_url="/swagger/",
     openapi_url="/openapi.json",
     redoc_url=None,
-    root_path="/api/v1/calendar"
+    root_path="/api/v1/calendar",
 )
 
 # Initialize the CORSMiddleware with the appropriate arguments

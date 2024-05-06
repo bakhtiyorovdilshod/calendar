@@ -49,22 +49,20 @@ class Note(Base):
             "fromTime": self.fromTime.strftime("%H:%M"),
             "tillTime": self.tillTime.strftime("%H:%M"),
             "date": self.date,
-            "colorCode": self.colorCode
+            "colorCode": self.colorCode,
         }
 
-    def to_read_model_as_detail(self) -> NoteSchemaDetail:
-        return NoteSchemaDetail(
-            id=self.id,
-            title=self.title,
-            date=self.date,
-            fromTime=self.fromTime.strftime("%H:%M"),
-            tillTime=self.tillTime.strftime("%H:%M"),
-            location=self.location,
-            description=self.description,
-            colorCode=self.colorCode,
-            createdAt=self.createdAt.date().strftime("%Y-%m-%d"),
-        )
-    
+    def to_read_model_as_detail(self) -> dict:
+        return {
+            "id": self.id,
+            "title": self.title,
+            "date": self.date,
+            "fromTime": self.fromTime.strftime("%H:%M"),
+            "tillTime": self.tillTime.strftime("%H:%M"),
+            "location": self.location,
+            "description": self.description,
+            "colorCode": self.colorCode,
+        }
 
 
 class NoteUser(Base):

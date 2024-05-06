@@ -23,7 +23,7 @@ class SQLAlchemyRepository(AbstractRepository):
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def add_one(self, data: dict) -> NoteSchemaAddResponse:
+    async def add_one(self, data: dict) -> dict:
         stmt = insert(self.model).values(**data).returning(*self.model.__table__.c)
         res = await self.session.execute(stmt)
         inserted_record = res.fetchone()
@@ -62,7 +62,6 @@ class SQLAlchemyRepository(AbstractRepository):
         begin_date: datetime = None,
         end_date: datetime = None,
         note_id: int = None,
-        
     ):
         stmt = select(self.model).where(self.model.isDelete == False)
         if organization_id:
@@ -70,7 +69,9 @@ class SQLAlchemyRepository(AbstractRepository):
 
         # Add date range condition only if both start_date and end_date are provided
         if begin_date is not None and end_date is not None:
-            stmt = stmt.where(func.cast(self.model.createdAt, DATE) >= begin_date.date())
+            stmt = stmt.where(
+                func.cast(self.model.createdAt, DATE) >= begin_date.date()
+            )
             stmt = stmt.where(func.cast(self.model.createdAt, DATE) <= end_date.date())
 
         if note_id:
@@ -93,10 +94,13 @@ class SQLAlchemyRepository(AbstractRepository):
         stmt = delete(self.model).where(self.model.noteId == id)
         await self.session.execute(stmt)
         await self.session.commit()
-    
+
     async def count_note_users(self, note_id: int):
-        stmt = select(func.count()).select_from(self.model).where(self.model.noteId == note_id)
+        stmt = (
+            select(func.count())
+            .select_from(self.model)
+            .where(self.model.noteId == note_id)
+        )
         res = await self.session.execute(stmt)
         count = res.scalar()
         return count
-

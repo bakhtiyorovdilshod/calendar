@@ -56,7 +56,6 @@ class NoteSchemaDetail(BaseModel):
     location: str
     description: str
     colorCode: str
-    createdAt: datetime
 
 
 class NoteSchemaAddResponse(BaseModel):
@@ -81,4 +80,3 @@ class NoteSchemaEdit(BaseModel):
     description: str
     colorCode: str
     userIds: List[int]
-
