@@ -62,6 +62,7 @@ class SQLAlchemyRepository(AbstractRepository):
         begin_date: datetime = None,
         end_date: datetime = None,
         note_id: int = None,
+        owner_id: int = None,
     ):
         stmt = select(self.model).where(self.model.isDelete == False)
         if organization_id:
@@ -76,6 +77,9 @@ class SQLAlchemyRepository(AbstractRepository):
 
         if note_id:
             stmt = stmt.where(self.model.noteId == note_id)
+
+        if owner_id:
+            stmt = stmt.where(self.model.ownerId == owner_id)
 
         res = await self.session.execute(stmt)
         res = [row[0].to_read_model_as_list() for row in res.all()]

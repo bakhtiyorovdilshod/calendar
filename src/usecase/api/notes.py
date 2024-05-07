@@ -46,6 +46,7 @@ async def get_notes(
         organization_id=user.last_organization_id,
         begin_date=begin_date,
         end_date=end_date,
+        owner_id=user.id,
     )
     return notes
 
@@ -73,7 +74,7 @@ async def edit_note(
     """
     Retrieve a single note by its ID.
     """
-    note = await NotesService().edit_note(uow, note_id, note)
+    note = await NotesService().edit_note(uow, note_id, note, user.last_organization_id)
     if note is None:
         raise HTTPException(status_code=404, detail="dddds not found")
     return note

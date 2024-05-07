@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from src.app.clients.state.staff import StateClient
 from src.infrastructure.postgres.node_dto import Note
 from src.usecase.schemas.notes import NoteSchema, NoteSchemaAdd, NoteSchemaEdit
 from src.usecase.utils.repository import AbstractRepository
@@ -12,13 +13,17 @@ class NotesService:
     ):
         notes_dict = note.model_dump()
         user_ids = notes_dict.pop("userIds")
+        state_client = StateClient()
+        users_info = await state_client.employee_validate(
+            user_ids=user_ids, organization_id=organization_id
+        )
         notes_dict.update({"organizationId": organization_id, "ownerId": owner_id})
         async with uow:
             note = await uow.notes.add_one(notes_dict)
-            for user_id in user_ids:
+            for user_obj in users_info:
                 note_user_dict = {
-                    "userId": user_id,
-                    "fullName": "Dilshod Bakhtiyorov",
+                    "userId": user_obj.get("user_id"),
+                    "fullName": user_obj.get("full_name"),
                     "noteId": note.get("id"),
                 }
                 await uow.note_users.add_one(note_user_dict)
@@ -33,12 +38,14 @@ class NotesService:
         uow: IUnitOfWork,
         begin_date: datetime,
         end_date: datetime,
+        owner_id: int,
     ):
         async with uow:
             notes = await uow.notes.find_all(
                 begin_date=begin_date,
                 end_date=end_date,
                 organization_id=organization_id,
+                owner_id=owner_id,
             )
             for note in notes:
                 users_count = await uow.note_users.count_note_users(
@@ -47,18 +54,24 @@ class NotesService:
                 note["usersCount"] = users_count
             return notes
 
-    async def edit_note(self, uow: IUnitOfWork, note_id: int, note: NoteSchemaEdit):
+    async def edit_note(
+        self, uow: IUnitOfWork, note_id: int, note: NoteSchemaEdit, organization_id: int
+    ):
         notes_dict = note.model_dump()
         note_user_ids = notes_dict.pop("userIds", [])
         # note_users = []
+        state_client = StateClient()
+        users_info = await state_client.employee_validate(
+            user_ids=note_user_ids, organization_id=organization_id
+        )
         async with uow:
             if len(note_user_ids) != 0:
                 await uow.note_users.delete_note_users(note_id)
             updated_note = await uow.notes.edit_one(note_id, notes_dict)
-            for user_id in note_user_ids:
+            for user_obj in users_info:
                 note_user_dict = {
-                    "userId": user_id,
-                    "fullName": "Dilshod Bakhtiyorov",
+                    "userId": user_obj.get("user_id"),
+                    "fullName": user_obj.get("full_name"),
                     "noteId": updated_note.get("id"),
                 }
                 await uow.note_users.add_one(note_user_dict)
