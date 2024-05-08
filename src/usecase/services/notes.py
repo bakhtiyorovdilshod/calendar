@@ -1,6 +1,9 @@
 from datetime import datetime
 
+from fastapi.responses import JSONResponse
+
 from src.app.clients.state.staff import StateClient
+from src.app.error import CustomHTTPException
 from src.infrastructure.postgres.node_dto import Note
 from src.usecase.schemas.notes import NoteSchema, NoteSchemaAdd, NoteSchemaEdit
 from src.usecase.utils.repository import AbstractRepository
@@ -68,6 +71,8 @@ class NotesService:
             if len(note_user_ids) != 0:
                 await uow.note_users.delete_note_users(note_id)
             updated_note = await uow.notes.edit_one(note_id, notes_dict)
+            if not updated_note:
+                raise CustomHTTPException(status_code=404, detail="note has not found")
             for user_obj in users_info:
                 note_user_dict = {
                     "userId": user_obj.get("user_id"),
@@ -88,10 +93,22 @@ class NotesService:
 
         async with uow:
             note = await uow.notes.find_one(note_id)
+            if not note:
+                raise CustomHTTPException(status_code=404, detail="note has not found")
             note_users = await note_user_obj.get_note_users(uow, note_id)
 
         note_with_users = {**note, "users": note_users}
         return note_with_users
+
+    async def delete_note(self, uow: IUnitOfWork, note_id: int):
+        message = {"status": "note has been deleted"}
+        async with uow:
+            note = await uow.notes.find_one(note_id)
+            if not note:
+                raise CustomHTTPException(status_code=404, detail="note has not found")
+            await uow.note_users.delete_note_users(note_id)
+            await uow.notes.delete_one(note_id)
+        return message
 
 
 class NoteUserService:

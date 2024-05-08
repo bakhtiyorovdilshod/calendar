@@ -4,6 +4,7 @@ import httpx
 from fastapi import HTTPException, Request
 
 from src.app.config import settings
+from src.app.error import CustomHTTPException
 
 VERIFY_STAFF_PATH = "api/v1/state/internal/employee/validate/"
 VERIFY_STAFF_SCHEME = "https" if settings.AUTH_USE_TLS else "http"
@@ -36,7 +37,7 @@ class StateClient:
             )
 
             if response.status_code != 200:
-                raise HTTPException(
-                    status_code=400, detail="some of users did not find"
+                raise CustomHTTPException(
+                    status_code=404, detail="some of users did not find"
                 )
             return response.json()

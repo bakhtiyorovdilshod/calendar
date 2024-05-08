@@ -94,8 +94,13 @@ class SQLAlchemyRepository(AbstractRepository):
         else:
             return None
 
-    async def delete_note_users(self, id: int):
-        stmt = delete(self.model).where(self.model.noteId == id)
+    async def delete_note_users(self, note_id: int):
+        stmt = delete(self.model).where(self.model.noteId == note_id)
+        await self.session.execute(stmt)
+        await self.session.commit()
+
+    async def delete_one(self, id: int):
+        stmt = delete(self.model).where(self.model.id == id)
         await self.session.execute(stmt)
         await self.session.commit()
 

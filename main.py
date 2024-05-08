@@ -1,7 +1,9 @@
 from contextlib import asynccontextmanager
 
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
+from src.app.error import CustomHTTPException
 from src.app.middleware import AuthMiddleware
 from src.infrastructure.postgres.database import async_session, engine
 from src.usecase.api.notes import router as router_notes
@@ -24,6 +26,10 @@ async def lifespan(app: FastAPI):
         await session.close()
 
 
+def http_exception_handler(request, exc):
+    return JSONResponse(exc.response_body(), status_code=exc.status_code)
+
+
 app = FastAPI(
     lifespan=lifespan,
     docs_url="/swagger/",
@@ -43,9 +49,10 @@ app.add_middleware(
 
 # Add the AuthMiddleware after CORSMiddleware
 app.add_middleware(AuthMiddleware)
+app.add_exception_handler(CustomHTTPException, http_exception_handler)
 
 for router in all_routers:
-    app.include_router(router)
+    app.include_router(router, prefix="/api/v1/calendar")
 
 
 if __name__ == "__main__":

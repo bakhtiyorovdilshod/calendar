@@ -1,7 +1,9 @@
 from datetime import datetime, timedelta
 
 from fastapi import APIRouter, HTTPException, Query
+from fastapi.responses import JSONResponse
 
+from src.app.error import CustomHTTPException
 from src.usecase.schemas.notes import (
     NoteSchema,
     NoteSchemaAdd,
@@ -31,10 +33,10 @@ async def add_note(
 async def get_notes(
     uow: UOWDep,
     user: User = Depends(get_current_user),
-    begin_date: datetime = Query(
+    beginDate: datetime = Query(
         ..., description="Start date for filtering notes", format="date-time"
     ),
-    end_date: datetime = Query(
+    endDate: datetime = Query(
         ..., description="End date for filtering notes", format="date-time"
     ),
 ):
@@ -44,8 +46,8 @@ async def get_notes(
     notes = await NotesService().get_notes(
         uow=uow,
         organization_id=user.last_organization_id,
-        begin_date=begin_date,
-        end_date=end_date,
+        begin_date=beginDate,
+        end_date=endDate,
         owner_id=user.id,
     )
     return notes
@@ -59,8 +61,6 @@ async def get_single_note(
     Retrieve a single note by its ID.
     """
     note = await NotesService().get_note(uow, note_id)
-    if note is None:
-        raise HTTPException(status_code=404, detail="Note not found")
     return note
 
 
@@ -75,6 +75,17 @@ async def edit_note(
     Retrieve a single note by its ID.
     """
     note = await NotesService().edit_note(uow, note_id, note, user.last_organization_id)
-    if note is None:
-        raise HTTPException(status_code=404, detail="dddds not found")
+    return note
+
+
+@router.delete("/{note_id}/")
+async def delete_note(
+    note_id: int,
+    uow: UOWDep,
+    user: User = Depends(get_current_user),
+):
+    """
+    Delete a single note by its ID.
+    """
+    note = await NotesService().delete_note(uow, note_id)
     return note
