@@ -59,6 +59,12 @@ env:
   - name: POSTGRES_DB
     value: calendar
 
+  - name: STATE_HOST
+    value: state
+
+  - name: STATE_PORT
+    value: "8080"
+
   - name: POSTGRES_USER
     valueFrom:
       secretKeyRef:
@@ -82,6 +88,18 @@ env:
       secretKeyRef:
         name: hr-backend-secrets
         key: calendar__auth_internal_pass
+
+  - name: STATE_INTERNAL_USERNAME
+    valueFrom:
+      secretKeyRef:
+        name: hr-backend-secrets
+        key: calendar__state_internal_user
+
+  - name: STATE_INTERNAL_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: hr-backend-secrets
+        key: calendar__state_internal_pass
 
 service:
   type: ClusterIP
