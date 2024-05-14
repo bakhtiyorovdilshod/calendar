@@ -52,7 +52,7 @@ app.add_middleware(AuthMiddleware)
 app.add_exception_handler(CustomHTTPException, http_exception_handler)
 
 for router in all_routers:
-    app.include_router(router, prefix="/api/v1/calendar")
+    app.include_router(router, prefix="")
 
 
 if __name__ == "__main__":
