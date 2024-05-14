@@ -8,7 +8,7 @@ from src.app.error import CustomHTTPException
 
 VERIFY_STAFF_PATH = "api/v1/state/internal/employee/validate/"
 VERIFY_STAFF_SCHEME = "https" if settings.AUTH_USE_TLS else "http"
-VERIFY_STAFF_URL = f"{VERIFY_STAFF_SCHEME}://{settings.AUTH_HOST}:{settings.AUTH_PORT}/{VERIFY_STAFF_PATH}"
+VERIFY_STAFF_URL = f"{VERIFY_STAFF_SCHEME}://{settings.STATE_HOST}:{settings.STATE_PORT}/{VERIFY_STAFF_PATH}"
 
 timeout = httpx.Timeout(10.0)
 
@@ -38,6 +38,7 @@ class StateClient:
 
             if response.status_code != 200:
                 raise CustomHTTPException(
-                    status_code=response.status_code, detail=f"some of users did not find: {response.text}"
+                    status_code=response.status_code,
+                    detail=f"some of users did not find: {response.text}",
                 )
             return response.json()
