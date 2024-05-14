@@ -38,6 +38,6 @@ class StateClient:
 
             if response.status_code != 200:
                 raise CustomHTTPException(
-                    status_code=404, detail="some of users did not find"
+                    status_code=response.status_code, detail=f"some of users did not find: {response.text}"
                 )
             return response.json()
