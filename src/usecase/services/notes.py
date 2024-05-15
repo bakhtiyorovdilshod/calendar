@@ -47,8 +47,7 @@ class NotesService:
             notes = await uow.notes.find_all(
                 begin_date=begin_date,
                 end_date=end_date,
-                organization_id=organization_id,
-                owner_id=owner_id,
+                organization_id=organization_id
             )
             for note in notes:
                 users_count = await uow.note_users.count_note_users(
@@ -87,7 +86,7 @@ class NotesService:
             note_obj["usersCount"] = len(note_user_ids)
             return note_obj
 
-    async def get_note(self, uow: IUnitOfWork, note_id: int):
+    async def get_note(self, uow: IUnitOfWork, note_id: int, owner_id):
         note_users = []
         note_user_obj = NoteUserService()
 
@@ -96,6 +95,7 @@ class NotesService:
             if not note:
                 raise CustomHTTPException(status_code=404, detail="note has not found")
             note_users = await note_user_obj.get_note_users(uow, note_id)
+            note['isOwner'] = True if note.get('ownerId') == owner_id else False
 
         note_with_users = {**note, "users": note_users}
         return note_with_users

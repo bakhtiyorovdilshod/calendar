@@ -49,7 +49,7 @@ class Note(Base):
             "fromTime": self.fromTime.strftime("%H:%M"),
             "tillTime": self.tillTime.strftime("%H:%M"),
             "date": self.date,
-            "colorCode": self.colorCode,
+            "colorCode": self.colorCode
         }
 
     def to_read_model_as_detail(self) -> dict:
@@ -62,6 +62,7 @@ class Note(Base):
             "location": self.location,
             "description": self.description,
             "colorCode": self.colorCode,
+            "ownerId": self.ownerId
         }
 
 

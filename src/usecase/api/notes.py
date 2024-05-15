@@ -60,7 +60,7 @@ async def get_single_note(
     """
     Retrieve a single note by its ID.
     """
-    note = await NotesService().get_note(uow, note_id)
+    note = await NotesService().get_note(uow, note_id, user.id)
     return note
 
 
