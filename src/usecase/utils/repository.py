@@ -71,9 +71,9 @@ class SQLAlchemyRepository(AbstractRepository):
         # Add date range condition only if both start_date and end_date are provided
         if begin_date is not None and end_date is not None:
             stmt = stmt.where(
-                func.cast(self.model.createdAt, DATE) >= begin_date.date()
+                func.cast(self.model.date, DATE) >= begin_date.date()
             )
-            stmt = stmt.where(func.cast(self.model.createdAt, DATE) <= end_date.date())
+            stmt = stmt.where(func.cast(self.model.date, DATE) <= end_date.date())
 
         if note_id:
             stmt = stmt.where(self.model.noteId == note_id)
