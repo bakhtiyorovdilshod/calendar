@@ -80,4 +80,4 @@ class NoteSchemaEdit(BaseModel):
     location: str
     description: str
     colorCode: str
-    userIds: List[int]
+    userIds: List[str]

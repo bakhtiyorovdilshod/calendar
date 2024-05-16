@@ -67,10 +67,11 @@ class NotesService:
     ):
         notes_dict = note.model_dump()
         note_user_ids = notes_dict.pop("userIds", [])
-        note_user_ids.append(pinfl)
+        if pinfl not in note_user_ids:
+            note_user_ids.append(pinfl)
         state_client = StateClient()
         users_info = await state_client.employee_validate(
-            user_ids=note_user_ids, organization_id=organization_id
+            pinfls=note_user_ids, organization_id=organization_id
         )
         async with uow:
             if len(note_user_ids) != 0:
@@ -82,7 +83,7 @@ class NotesService:
                 note_user_dict = {
                     "userId": user_obj.get("user_id"),
                     "fullName": user_obj.get("full_name"),
-                    "noteId": note.get("id"),
+                    "noteId": note_id,
                     "pinfl": user_obj.get('pinfl'),
                     "image": user_obj.get('image')
                 }
