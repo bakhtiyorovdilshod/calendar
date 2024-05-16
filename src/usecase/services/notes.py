@@ -12,22 +12,26 @@ from src.usecase.utils.unitofwork import IUnitOfWork
 
 class NotesService:
     async def add_note(
-        self, uow: IUnitOfWork, note: NoteSchemaAdd, organization_id: int, owner_id: int
+        self, uow: IUnitOfWork, note: NoteSchemaAdd, organization_id: int, pinfl: str
     ):
         notes_dict = note.model_dump()
         user_ids = notes_dict.pop("userIds")
+        if pinfl not in user_ids:
+            user_ids.append(pinfl)
         state_client = StateClient()
         users_info = await state_client.employee_validate(
-            user_ids=user_ids, organization_id=organization_id
+            pinfls=user_ids, organization_id=organization_id
         )
-        notes_dict.update({"organizationId": organization_id, "ownerId": owner_id})
+        print(users_info)
+        notes_dict.update({"organizationId": organization_id, "ownerId": pinfl})
         async with uow:
             note = await uow.notes.add_one(notes_dict)
             for user_obj in users_info:
                 note_user_dict = {
-                    "userId": user_obj.get("user_id"),
                     "fullName": user_obj.get("full_name"),
                     "noteId": note.get("id"),
+                    "pinfl": user_obj.get('pinfl'),
+                    "image": user_obj.get('image')
                 }
                 await uow.note_users.add_one(note_user_dict)
             await uow.commit()
@@ -41,13 +45,15 @@ class NotesService:
         uow: IUnitOfWork,
         begin_date: datetime,
         end_date: datetime,
-        owner_id: int,
+        pinfl: str,
     ):
         async with uow:
+            note_ids = await uow.note_users.get_note_ids(pinfl=pinfl)
             notes = await uow.notes.find_all(
                 begin_date=begin_date,
                 end_date=end_date,
-                organization_id=organization_id
+                organization_id=organization_id,
+                note_ids=note_ids
             )
             for note in notes:
                 users_count = await uow.note_users.count_note_users(
@@ -57,11 +63,11 @@ class NotesService:
             return notes
 
     async def edit_note(
-        self, uow: IUnitOfWork, note_id: int, note: NoteSchemaEdit, organization_id: int
+        self, uow: IUnitOfWork, note_id: int, note: NoteSchemaEdit, organization_id: int, pinfl: str
     ):
         notes_dict = note.model_dump()
         note_user_ids = notes_dict.pop("userIds", [])
-        # note_users = []
+        note_user_ids.append(pinfl)
         state_client = StateClient()
         users_info = await state_client.employee_validate(
             user_ids=note_user_ids, organization_id=organization_id
@@ -76,7 +82,9 @@ class NotesService:
                 note_user_dict = {
                     "userId": user_obj.get("user_id"),
                     "fullName": user_obj.get("full_name"),
-                    "noteId": updated_note.get("id"),
+                    "noteId": note.get("id"),
+                    "pinfl": user_obj.get('pinfl'),
+                    "image": user_obj.get('image')
                 }
                 await uow.note_users.add_one(note_user_dict)
                 # note_users.append(note_user)

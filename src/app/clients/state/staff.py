@@ -14,10 +14,10 @@ timeout = httpx.Timeout(10.0)
 
 
 class StateClient:
-    async def employee_validate(self, user_ids, organization_id):
+    async def employee_validate(self, pinfls, organization_id):
         async with httpx.AsyncClient(timeout=timeout) as client:
             data = json.dumps(
-                {"user_ids": user_ids, "organization_id": organization_id}
+                {"pinfls": pinfls, "organization_id": organization_id}
             )
             headers = {
                 "Content-Type": "application/json",
@@ -27,6 +27,7 @@ class StateClient:
                 settings.STATE_INTERNAL_USERNAME,
                 settings.STATE_INTERNAL_PASSWORD,
             )
+            print(data)
 
             response = await client.post(
                 url=VERIFY_STAFF_URL,
@@ -35,6 +36,7 @@ class StateClient:
                 auth=auth,
                 timeout=None,
             )
+            print(response.text)
 
             if response.status_code != 200:
                 raise CustomHTTPException(

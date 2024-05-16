@@ -62,7 +62,7 @@ class SQLAlchemyRepository(AbstractRepository):
         begin_date: datetime = None,
         end_date: datetime = None,
         note_id: int = None,
-        owner_id: int = None,
+        note_ids: list = None,
     ):
         stmt = select(self.model).where(self.model.isDelete == False)
         if organization_id:
@@ -74,12 +74,10 @@ class SQLAlchemyRepository(AbstractRepository):
                 func.cast(self.model.date, DATE) >= begin_date.date()
             )
             stmt = stmt.where(func.cast(self.model.date, DATE) <= end_date.date())
+            stmt = stmt.where(self.model.id.in_(note_ids))
 
         if note_id:
             stmt = stmt.where(self.model.noteId == note_id)
-
-        if owner_id:
-            stmt = stmt.where(self.model.ownerId == owner_id)
 
         res = await self.session.execute(stmt)
         res = [row[0].to_read_model_as_list() for row in res.all()]
@@ -93,6 +91,12 @@ class SQLAlchemyRepository(AbstractRepository):
             return result.to_read_model_as_detail()
         else:
             return None
+    
+    async def get_note_ids(self, pinfl: str):
+        stmt = select(self.model).where(self.model.pinfl == pinfl)
+        res = await self.session.execute(stmt)
+        res = [row[0].to_return_note_ids() for row in res.all()]
+        return res
 
     async def delete_note_users(self, note_id: int):
         stmt = delete(self.model).where(self.model.noteId == note_id)

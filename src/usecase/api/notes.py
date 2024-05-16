@@ -25,7 +25,7 @@ router = APIRouter(
 async def add_note(
     note: NoteSchemaAdd, uow: UOWDep, user: User = Depends(get_current_user)
 ):
-    note = await NotesService().add_note(uow, note, user.last_organization_id, user.id)
+    note = await NotesService().add_note(uow, note, user.last_organization_id, user.pinfl)
     return note
 
 
@@ -48,7 +48,7 @@ async def get_notes(
         organization_id=user.last_organization_id,
         begin_date=beginDate,
         end_date=endDate,
-        owner_id=user.id,
+        pinfl=user.pinfl,
     )
     return notes
 
@@ -60,7 +60,8 @@ async def get_single_note(
     """
     Retrieve a single note by its ID.
     """
-    note = await NotesService().get_note(uow, note_id, user.id)
+    print(user.pinfl)
+    note = await NotesService().get_note(uow, note_id, user.pinfl)
     return note
 
 
@@ -74,7 +75,7 @@ async def edit_note(
     """
     Retrieve a single note by its ID.
     """
-    note = await NotesService().edit_note(uow, note_id, note, user.last_organization_id)
+    note = await NotesService().edit_note(uow, note_id, note, user.last_organization_id, user.pinfl)
     return note
 
 

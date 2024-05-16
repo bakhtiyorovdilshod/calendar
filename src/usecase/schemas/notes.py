@@ -29,7 +29,7 @@ class NoteSchemaAdd(BaseModel):
     location: str
     description: str
     colorCode: str
-    userIds: List[int]
+    userIds: List[str]
 
 
 class NoteSchemaList(BaseModel):
@@ -42,9 +42,10 @@ class NoteSchemaList(BaseModel):
 
 class NoteUserSchemaList(BaseModel):
     id: int
-    userId: int
     fullName: str
     isOwner: bool
+    pinfl: Optional[str]
+    image: Optional[str]
 
 
 class NoteSchemaDetail(BaseModel):
