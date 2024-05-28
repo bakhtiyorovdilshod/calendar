@@ -60,7 +60,6 @@ async def get_single_note(
     """
     Retrieve a single note by its ID.
     """
-    print(user.pinfl)
     note = await NotesService().get_note(uow, note_id, user.pinfl)
     return note
 
@@ -90,3 +89,11 @@ async def delete_note(
     """
     note = await NotesService().delete_note(uow, note_id)
     return note
+
+
+@router.get("/employments/list/")
+async def get_employments(
+    user: User = Depends(get_current_user)
+):  
+    employments = await NotesService().get_employments(user.last_organization_id, user.pinfl)
+    return employments

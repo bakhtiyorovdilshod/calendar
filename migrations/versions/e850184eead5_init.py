@@ -1,8 +1,8 @@
-"""initial
+"""init
 
-Revision ID: 873c26723182
+Revision ID: e850184eead5
 Revises: 
-Create Date: 2024-05-16 18:10:59.125221
+Create Date: 2024-05-28 10:58:28.561264
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '873c26723182'
+revision: str = 'e850184eead5'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -31,16 +31,16 @@ def upgrade() -> None:
     sa.Column('description', sa.Text(), nullable=True),
     sa.Column('colorCode', sa.String(), nullable=True),
     sa.Column('isDelete', sa.Boolean(), nullable=True),
-    sa.Column('ownerId', sa.String(), nullable=True),
     sa.Column('createdAt', sa.TIMESTAMP(), nullable=True),
     sa.Column('updatedAt', sa.TIMESTAMP(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('note_users',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('userId', sa.Integer(), nullable=True),
-    sa.Column('fullName', sa.String(), nullable=True),
+    sa.Column('employmentId', sa.Integer(), nullable=True),
     sa.Column('pinfl', sa.String(), nullable=True),
+    sa.Column('fullName', sa.String(), nullable=True),
+    sa.Column('gender', sa.String(), nullable=True),
     sa.Column('image', sa.String(), nullable=True),
     sa.Column('noteId', sa.Integer(), nullable=True),
     sa.Column('createdAt', sa.TIMESTAMP(), nullable=True),

@@ -15,28 +15,28 @@ class NotesService:
         self, uow: IUnitOfWork, note: NoteSchemaAdd, organization_id: int, pinfl: str
     ):
         notes_dict = note.model_dump()
-        user_ids = notes_dict.pop("userIds")
-        if pinfl not in user_ids:
-            user_ids.append(pinfl)
+        employment_ids = notes_dict.pop("employmentIds")
         state_client = StateClient()
-        users_info = await state_client.employee_validate(
-            pinfls=user_ids, organization_id=organization_id
+        users_info = await state_client.employment_validate(
+            employment_ids=employment_ids, organization_id=organization_id, pinfl=pinfl
         )
-        print(users_info)
-        notes_dict.update({"organizationId": organization_id, "ownerId": pinfl})
+        notes_dict.update({"organizationId": organization_id})
         async with uow:
             note = await uow.notes.add_one(notes_dict)
             for user_obj in users_info:
                 note_user_dict = {
-                    "fullName": user_obj.get("full_name"),
+                    "employmentId": user_obj.get("employmentId"),
+                    "gender": user_obj.get("gender"),
+                    "fullName": user_obj.get("fullName"),
                     "noteId": note.get("id"),
                     "pinfl": user_obj.get('pinfl'),
-                    "image": user_obj.get('image')
+                    "image": user_obj.get('image'),
+                    "isOwner": True if pinfl == user_obj.get('pinfl') else False,
                 }
                 await uow.note_users.add_one(note_user_dict)
             await uow.commit()
             note_obj = Note(**note).to_read_model_as_list()
-            note_obj["usersCount"] = len(user_ids)
+            note_obj["usersCount"] = len(users_info)
             return note_obj
 
     async def get_notes(
@@ -45,7 +45,7 @@ class NotesService:
         uow: IUnitOfWork,
         begin_date: datetime,
         end_date: datetime,
-        pinfl: str,
+        pinfl: str
     ):
         async with uow:
             note_ids = await uow.note_users.get_note_ids(pinfl=pinfl)
@@ -66,36 +66,34 @@ class NotesService:
         self, uow: IUnitOfWork, note_id: int, note: NoteSchemaEdit, organization_id: int, pinfl: str
     ):
         notes_dict = note.model_dump()
-        note_user_ids = notes_dict.pop("userIds", [])
-        if pinfl not in note_user_ids:
-            note_user_ids.append(pinfl)
+        employment_ids = notes_dict.pop("employmentIds", [])
         state_client = StateClient()
-        users_info = await state_client.employee_validate(
-            pinfls=note_user_ids, organization_id=organization_id
+        users_info = await state_client.employment_validate(
+            employment_ids=employment_ids, organization_id=organization_id, pinfl=pinfl
         )
         async with uow:
-            if len(note_user_ids) != 0:
+            if len(employment_ids) != 0:
                 await uow.note_users.delete_note_users(note_id)
             updated_note = await uow.notes.edit_one(note_id, notes_dict)
             if not updated_note:
                 raise CustomHTTPException(status_code=404, detail="note has not found")
             for user_obj in users_info:
                 note_user_dict = {
-                    "userId": user_obj.get("user_id"),
-                    "fullName": user_obj.get("full_name"),
+                    "employmentId": user_obj.get("employmentId"),
+                    "gender": user_obj.get("gender"),
+                    "fullName": user_obj.get("fullName"),
                     "noteId": note_id,
                     "pinfl": user_obj.get('pinfl'),
-                    "image": user_obj.get('image')
+                    "image": user_obj.get('image'),
+                    "isOwner": True if pinfl == user_obj.get('pinfl') else False,
                 }
                 await uow.note_users.add_one(note_user_dict)
-                # note_users.append(note_user)
             await uow.commit()
-            # updated_note.update({"users": note_users})
             note_obj = Note(**updated_note).to_read_model_as_list()
-            note_obj["usersCount"] = len(note_user_ids)
+            note_obj["usersCount"] = len(users_info)
             return note_obj
 
-    async def get_note(self, uow: IUnitOfWork, note_id: int, owner_id):
+    async def get_note(self, uow: IUnitOfWork, note_id: int, pinfl: str):
         note_users = []
         note_user_obj = NoteUserService()
 
@@ -104,9 +102,20 @@ class NotesService:
             if not note:
                 raise CustomHTTPException(status_code=404, detail="note has not found")
             note_users = await note_user_obj.get_note_users(uow, note_id)
-            note['isOwner'] = True if note.get('ownerId') == owner_id else False
+            isOwner = False
+            users = []
+            for user in note_users:
+                user_detail = dict(user)
+                if user_detail.get('isOwner') and user_detail.get('pinfl') == pinfl:
+                    isOwner = True
+                if user_detail.get('gender') and user_detail.get('gender') == 'F':
+                    user_detail['image'] = None
+                user_detail.pop('pinfl')
+                user_detail.pop('gender')
+                users.append(user_detail)
+            note['isOwner'] = isOwner
 
-        note_with_users = {**note, "users": note_users}
+        note_with_users = {**note, "users": users}
         return note_with_users
 
     async def delete_note(self, uow: IUnitOfWork, note_id: int):
@@ -118,6 +127,16 @@ class NotesService:
             await uow.note_users.delete_note_users(note_id)
             await uow.notes.delete_one(note_id)
         return message
+    
+    async def get_employments(self, organization_id: int, pinfl: str):
+        state_client = StateClient()
+        employments_info = await state_client.get_employments(
+            organization_id=organization_id,
+            pinfl=pinfl
+        )
+        return employments_info
+
+
 
 
 class NoteUserService:

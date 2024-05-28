@@ -38,7 +38,6 @@ class Note(Base):
     description = Column(Text)
     colorCode = Column(String)
     isDelete = Column(Boolean, default=False)
-    ownerId = Column(String)
     createdAt = Column(TIMESTAMP, default=func.now())
     updatedAt = Column(TIMESTAMP, nullable=True)
 
@@ -62,7 +61,6 @@ class Note(Base):
             "location": self.location,
             "description": self.description,
             "colorCode": self.colorCode,
-            "ownerId": self.ownerId
         }
 
 
@@ -72,9 +70,10 @@ class NoteUser(Base):
     __tablename__ = "note_users"
 
     id = Column(Integer, primary_key=True)
-    userId = Column(Integer, nullable=True)
+    employmentId = Column(Integer)
+    pinfl = Column(String)
     fullName = Column(String)
-    pinfl = Column(String, nullable=True)
+    gender = Column(String, nullable=True)
     image = Column(String, nullable=True)
     noteId = Column(Integer, ForeignKey("notes.id"))
     createdAt = Column(TIMESTAMP, default=func.now())
@@ -84,11 +83,12 @@ class NoteUser(Base):
 
     def to_read_model_as_list(self) -> NoteUserSchemaList:
         return NoteUserSchemaList(
-            id=self.id, 
             fullName=self.fullName, 
             isOwner=self.isOwner, 
-            pinfl=self.pinfl, 
-            image=self.image
+            employmentId=self.employmentId, 
+            image=self.image,
+            pinfl=self.pinfl,
+            gender=self.gender
         )
     
     def to_return_note_ids(self) -> list:
