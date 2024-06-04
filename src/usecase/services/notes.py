@@ -78,17 +78,16 @@ class NotesService:
             if not updated_note:
                 raise CustomHTTPException(status_code=404, detail="note has not found")
             for user_obj in users_info:
-                if user_obj.get('pinfl') != pinfl:
-                    note_user_dict = {
-                        "employmentId": user_obj.get("employmentId"),
-                        "gender": user_obj.get("gender"),
-                        "fullName": user_obj.get("fullName"),
-                        "noteId": note_id,
-                        "pinfl": user_obj.get('pinfl'),
-                        "image": user_obj.get('image'),
-                        "isOwner": True if pinfl == user_obj.get('pinfl') else False,
-                    }
-                    await uow.note_users.add_one(note_user_dict)
+                note_user_dict = {
+                    "employmentId": user_obj.get("employmentId"),
+                    "gender": user_obj.get("gender"),
+                    "fullName": user_obj.get("fullName"),
+                    "noteId": note_id,
+                    "pinfl": user_obj.get('pinfl'),
+                    "image": user_obj.get('image'),
+                    "isOwner": True if pinfl == user_obj.get('pinfl') else False,
+                }
+                await uow.note_users.add_one(note_user_dict)
             await uow.commit()
             note_obj = Note(**updated_note).to_read_model_as_list()
             note_obj["usersCount"] = len(users_info)
