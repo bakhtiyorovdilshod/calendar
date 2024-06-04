@@ -96,5 +96,5 @@ async def get_employments(
     user: User = Depends(get_current_user),
     search: str = Query(...)
 ):  
-    employments = await NotesService().get_employments(user.last_organization_id, user.pinfl)
+    employments = await NotesService().get_employments(user.last_organization_id, user.pinfl, search)
     return employments

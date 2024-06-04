@@ -132,7 +132,8 @@ class NotesService:
         state_client = StateClient()
         employments_info = await state_client.get_employments(
             organization_id=organization_id,
-            pinfl=pinfl
+            pinfl=pinfl,
+            search=search
         )
         return employments_info
 
