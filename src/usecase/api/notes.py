@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import JSONResponse
@@ -94,7 +95,7 @@ async def delete_note(
 @router.get("/employments/list/")
 async def get_employments(
     user: User = Depends(get_current_user),
-    search: str = Query(...)
+    search: Optional[str] = None
 ):  
     employments = await NotesService().get_employments(user.last_organization_id, user.pinfl, search)
     return employments
