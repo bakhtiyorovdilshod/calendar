@@ -114,6 +114,7 @@ class NotesService:
                 user_detail.pop('gender')
                 users.append(user_detail)
             note['isOwner'] = isOwner
+        users = sorted(users, key=lambda user: user["isOwner"], reverse=True)
 
         note_with_users = {**note, "users": users}
         return note_with_users
