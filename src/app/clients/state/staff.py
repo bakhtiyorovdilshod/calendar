@@ -18,7 +18,7 @@ timeout = httpx.Timeout(10.0)
 
 
 class StateClient:
-    async def get_employments(self, organization_id: int, pinfl: str):
+    async def get_employments(self, organization_id: int, pinfl: str, search: str):
         async with httpx.AsyncClient(timeout=timeout) as client:
             headers = {
                 "Content-Type": "application/json",
@@ -32,7 +32,7 @@ class StateClient:
             response = await client.get(
                 url=VERIFY_EMPOYMENTLIST_PATH_URL,
                 headers=headers,
-                params={"orgId": organization_id, "pinfl": pinfl},
+                params={"orgId": organization_id, "pinfl": pinfl, "search": search},
                 auth=auth,
                 timeout=None,
             )

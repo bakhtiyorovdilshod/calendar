@@ -93,7 +93,8 @@ async def delete_note(
 
 @router.get("/employments/list/")
 async def get_employments(
-    user: User = Depends(get_current_user)
+    user: User = Depends(get_current_user),
+    search: str = Query(...)
 ):  
     employments = await NotesService().get_employments(user.last_organization_id, user.pinfl)
     return employments

@@ -128,7 +128,7 @@ class NotesService:
             await uow.notes.delete_one(note_id)
         return message
     
-    async def get_employments(self, organization_id: int, pinfl: str):
+    async def get_employments(self, organization_id: int, pinfl: str, search: str):
         state_client = StateClient()
         employments_info = await state_client.get_employments(
             organization_id=organization_id,
